@@ -2,7 +2,7 @@ using System.IO;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace AdventOfCode2021.Day1
+namespace AdventOfCode2021.Day2
 {
 
     public class DayUnitTest1
@@ -19,16 +19,12 @@ namespace AdventOfCode2021.Day1
         {
             // Arrange
             string input =
-@"199
-200
-208
-210
-200
-207
-240
-269
-260
-263";
+@"forward 5
+down 5
+forward 8
+up 3
+down 8
+forward 2";
 
             Solver solver = new();
 
@@ -36,7 +32,7 @@ namespace AdventOfCode2021.Day1
             var result = solver.SolveDayStar1(input);
 
             // Assert
-            Assert.Equal("7", result);
+            Assert.Equal("150", result);
         }
 
         [Fact]
@@ -54,21 +50,19 @@ namespace AdventOfCode2021.Day1
             output.WriteLine(result);
         }
 
+
+
         [Fact]
         public void Star2_Test_1()
         {
             // Arrange
             string input =
-@"199
-200
-208
-210
-200
-207
-240
-269
-260
-263";
+@"forward 5
+down 5
+forward 8
+up 3
+down 8
+forward 2";
 
             Solver solver = new();
 
@@ -76,7 +70,7 @@ namespace AdventOfCode2021.Day1
             var result = solver.SolveDayStar2(input);
 
             // Assert
-            Assert.Equal("5", result);
+            Assert.Equal("900", result);
         }
 
         [Fact]
