@@ -52,6 +52,7 @@ namespace AdventOfCode2021.Day5
 
             // Assert
             output.WriteLine(result);
+            Assert.Equal("7438", result);
         }
 
 
@@ -94,6 +95,7 @@ namespace AdventOfCode2021.Day5
 
             // Assert
             output.WriteLine(result);
+            Assert.Equal("21406", result);
         }
     }
 }
