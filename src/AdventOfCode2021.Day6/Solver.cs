@@ -6,7 +6,6 @@ namespace AdventOfCode2021.Day6
     {
         public string SolveDayStar1(string input)
         {
-            //creates a new lanternfish once every 7 days
             World world = new(input);
 
             int daysToSimulate = 80;
