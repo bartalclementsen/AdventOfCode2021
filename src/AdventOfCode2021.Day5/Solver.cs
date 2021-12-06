@@ -13,7 +13,7 @@ namespace AdventOfCode2021.Day5
         {
             World world = new(input);
 
-            //var v = world.ToString();
+            var v = world.ToString();
 
             return world.GetTheNumberOfPointsWhereAtLeastTwoLinesOverlap().ToString();
         }
@@ -22,7 +22,7 @@ namespace AdventOfCode2021.Day5
         {
             World world = new(input, onlyHorizontalAndVertical: false);
 
-            //var v = world.ToString();
+            var v = world.ToString();
 
             return world.GetTheNumberOfPointsWhereAtLeastTwoLinesOverlap().ToString();
         }
@@ -76,7 +76,7 @@ namespace AdventOfCode2021.Day5
                         Point point = new Point(x, y);
                         var overlappingLines = LineSegments.Where(ls => ls.IsPointOnSegment(point));
 
-                        if (overlappingLines.Count() > 1)
+                        if (overlappingLines.Any())
                         {
                             array[x, y] = overlappingLines.Count().ToString();
                         }
