@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
 namespace AdventOfCode2021.Day6
 {
@@ -14,8 +10,8 @@ namespace AdventOfCode2021.Day6
             World world = new(input);
 
             int daysToSimulate = 80;
-            for(int day = 0; day < daysToSimulate; day++)
-            {    
+            for (int day = 0; day < daysToSimulate; day++)
+            {
                 world.IncrementDay();
             }
 
@@ -39,19 +35,19 @@ namespace AdventOfCode2021.Day6
         {
             public int CurrentDay { get; private set; } = 0;
 
-            public BlockingCollection<LanterFish> LanterFishes { get; }
+            public long[] lanterFishesBucket = new long[9];
 
             public World(string input)
             {
                 var lanterFishes = input
                     .Split(",")
-                    .Select(o => new LanterFish(int.Parse(o)))
+                    .Select(o => int.Parse(o))
+                    .GroupBy(o => o)
                     .ToList();
 
-                LanterFishes = new BlockingCollection<LanterFish>();
                 foreach (var fish in lanterFishes)
                 {
-                    LanterFishes.Add(fish);
+                    lanterFishesBucket[fish.Key] = fish.Count();
                 }
             }
 
@@ -59,52 +55,24 @@ namespace AdventOfCode2021.Day6
             {
                 CurrentDay++;
 
-                Parallel.ForEach(LanterFishes, (lanterFish) =>
-                {
-                    if(lanterFish.TickAndSpawnIfPossibleAndReset(out var spawnedFish))
-                    {
-                        LanterFishes.Add(spawnedFish!);
-                    }
-                });
+                long newFish = lanterFishesBucket[0];
+                lanterFishesBucket[0] = lanterFishesBucket[1];
+                lanterFishesBucket[1] = lanterFishesBucket[2];
+                lanterFishesBucket[2] = lanterFishesBucket[3];
+                lanterFishesBucket[3] = lanterFishesBucket[4];
+                lanterFishesBucket[4] = lanterFishesBucket[5];
+                lanterFishesBucket[5] = lanterFishesBucket[6];
+                lanterFishesBucket[6] = lanterFishesBucket[7];
+                lanterFishesBucket[7] = lanterFishesBucket[8];
+
+                lanterFishesBucket[8] = newFish;
+                lanterFishesBucket[6] += newFish;
             }
 
-            internal int GetTotalLanterFishes()
+            internal long GetTotalLanterFishes()
             {
-                return LanterFishes.Count();
-            }
-
-            public override string ToString()
-            {
-                return $"After {CurrentDay.ToString("00")} days: {string.Join(",", LanterFishes.Select(lf => lf.CurrentRefractoryPeriod))}";
+                return lanterFishesBucket.Sum();
             }
         }
-
-        public class LanterFish
-        {
-            public const int RefractoryPeriod = 6;
-
-            public int CurrentRefractoryPeriod { get; private set; }
-
-            public LanterFish(int currentRefractoryPeriod)
-            {
-                CurrentRefractoryPeriod = currentRefractoryPeriod;
-            }
-
-            public bool TickAndSpawnIfPossibleAndReset(out LanterFish? lanterFish)
-            {
-                CurrentRefractoryPeriod--;
-
-                if (CurrentRefractoryPeriod < 0)
-                {
-                    CurrentRefractoryPeriod = RefractoryPeriod;
-                    lanterFish = new LanterFish(8);
-                    return true;
-                }
-
-                lanterFish = null;
-                return false;
-            }
-        }
-
     }
 }
