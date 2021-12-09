@@ -13,8 +13,6 @@ namespace AdventOfCode2021.Day9
             var lowPoints = heightMap.GetLowPoints();
             var totalRiskLevel = lowPoints.Sum(o => o.RiskLevel);
 
-            var basins = heightMap.GetBasinsFromLowPoints(lowPoints);
-
             return totalRiskLevel.ToString();
         }
 
@@ -23,22 +21,27 @@ namespace AdventOfCode2021.Day9
             var heightMap = new HeightMap(input);
             var lowPoints = heightMap.GetLowPoints();
             var basins = heightMap.GetBasinsFromLowPoints(lowPoints);
-            
 
-            return basins.Take(3).Select(o => o.Points.Count).Aggregate((a,b) => a*b).ToString();
+            return basins.Take(3).Select(o => o.Count).Aggregate((a, b) => a * b).ToString();
         }
 
         public class Basin
         {
-            public Point LowPoint { get; }
-
             public HashSet<Point> Points { get; } = new HashSet<Point>();
+
+            private readonly Point _lowPoint;
+
+            public int Count => Points.Count;
 
             public Basin(Point lowPoint)
             {
-                LowPoint = lowPoint;
+                _lowPoint = lowPoint;
             }
 
+            public override string ToString()
+            {
+                return $"{Count} (Starting at {_lowPoint})";
+            }
         }
 
         public class Point : IEquatable<Point?>
@@ -126,7 +129,30 @@ namespace AdventOfCode2021.Day9
                 return lowPoints;
             }
 
-            public bool IsLowPoint(Point point)
+            public List<Basin> GetBasinsFromLowPoints(List<Point> lowPoints)
+            {
+                return lowPoints.Select(p => GetBasinFromLowPoint(p)).OrderByDescending(o => o.Points.Count).ToList();
+            }
+
+            public override string ToString()
+            {
+                StringBuilder sb = new StringBuilder();
+
+                for (var i = 0; i < height; i++)
+                {
+                    if (i != 0)
+                        sb.AppendLine();
+
+                    for (var j = 0; j < width; j++)
+                    {
+                        sb.Append(map[j, i]);
+                    }
+                }
+
+                return sb.ToString();
+            }
+
+            private bool IsLowPoint(Point point)
             {
                 int x = point.X;
                 int y = point.Y;
@@ -150,29 +176,19 @@ namespace AdventOfCode2021.Day9
             }
 
             private Point GetPoint(int x, int y)
-            {
-                return new Point(x, y, map[x, y]);
-            }
+                => TryGetPoint(x, y) ?? throw new ArgumentNullException();
 
             private Point? TryGetLeftPointFrom(Point point)
-            {
-                return TryGetPoint(point.X - 1, point.Y);
-            }
+                => TryGetPoint(point.X - 1, point.Y);
 
             private Point? TryGetRightPointFrom(Point point)
-            {
-                return TryGetPoint(point.X + 1, point.Y);
-            }
+                => TryGetPoint(point.X + 1, point.Y);
 
             private Point? TryGetUpPointFrom(Point point)
-            {
-                return TryGetPoint(point.X, point.Y - 1);
-            }
+                => TryGetPoint(point.X, point.Y - 1);
 
             private Point? TryGetDownPointFrom(Point point)
-            {
-                return TryGetPoint(point.X, point.Y + 1);
-            }
+                => TryGetPoint(point.X, point.Y + 1);
 
             private Point? TryGetPoint(int x, int y)
             {
@@ -182,12 +198,6 @@ namespace AdventOfCode2021.Day9
                 }
 
                 return null;
-            }
-
-
-            internal List<Basin> GetBasinsFromLowPoints(List<Point> lowPoints)
-            {
-                return lowPoints.Select(p => GetBasinFromLowPoint(p)).OrderByDescending(o => o.Points.Count).ToList();
             }
 
             private Basin GetBasinFromLowPoint(Point lowPoint)
@@ -209,7 +219,7 @@ namespace AdventOfCode2021.Day9
                         TryGetDownPointFrom(point)
                     };
 
-                    foreach(var possiblePoint in possiblePoints)
+                    foreach (var possiblePoint in possiblePoints)
                     {
                         if (possiblePoint != null && possiblePoint.Height != 9 && basin.Points.Contains(possiblePoint) == false)
                         {
@@ -219,24 +229,6 @@ namespace AdventOfCode2021.Day9
                 }
 
                 return basin;
-            }
-
-            public override string ToString()
-            {
-                StringBuilder sb = new StringBuilder();
-
-                for (var i = 0; i < height; i++)
-                {
-                    if (i != 0)
-                        sb.AppendLine();
-
-                    for (var j = 0; j < width; j++)
-                    {
-                        sb.Append(map[j, i]);
-                    }
-                }
-
-                return sb.ToString();
             }
         }
     }
