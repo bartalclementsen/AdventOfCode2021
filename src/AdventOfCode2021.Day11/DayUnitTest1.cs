@@ -40,65 +40,61 @@ namespace AdventOfCode2021.Day11
             Assert.Equal("1656", result);
         }
 
-//        [Fact]
-//        public void Star1_Solve()
-//        {
-//            // Arrange
-//            string input = File.ReadAllText("data1.txt");
+        [Fact]
+        public void Star1_Solve()
+        {
+            // Arrange
+            string input = File.ReadAllText("data1.txt");
 
-//            Solver solver = new();
+            Solver solver = new();
 
-//            // Act
-//            var result = solver.SolveDayStar1(input);
+            // Act
+            var result = solver.SolveDayStar1(input);
 
-//            // Assert
-//            output.WriteLine(result);
-//            Assert.Equal("316851", result);
-//        }
+            // Assert
+            output.WriteLine(result);
+            Assert.Equal("1673", result);
+        }
 
+        [Fact]
+        public void Star2_Test_1()
+        {
+            // Arrange
+            string input =
+@"5483143223
+2745854711
+5264556173
+6141336146
+6357385478
+4167524645
+2176841721
+6882881134
+4846848554
+5283751526";
 
+            Solver solver = new();
 
-//        [Fact]
-//        public void Star2_Test_1()
-//        {
-//            // Arrange
-//            string input =
-//@"[({(<(())[]>[[{[]{<()<>>
-//[(()[<>])]({[<{<<[]>>(
-//{([(<{}[<>[]}>{[]{[(<()>
-//(((({<>}<{<{<>}{[]{[]{}
-//[[<[([]))<([[{}[[()]]]
-//[{[{({}]{}}([{[{{{}}([]
-//{<[[]]>}<{[{[{[]{()[[[]
-//[<(<(<(<{}))><([]([]()
-//<{([([[(<>()){}]>(<<{{
-//<{([{{}}[<[[[<>{}]]]>[]]";
+            // Act
+            var result = solver.SolveDayStar2(input);
 
-//            Solver solver = new();
+            // Assert
+            Assert.Equal("195", result);
+        }
 
-//            // Act
-//            var result = solver.SolveDayStar2(input);
+        [Fact]
+        public void Star2_Solve()
+        {
+            // Arrange
+            string input = File.ReadAllText("data1.txt");
 
-//            // Assert
-//            Assert.Equal("288957", result);
-//        }
+            Solver solver = new();
 
-//        [Fact]
-//        public void Star2_Solve()
-//        {
-//            // Arrange
-//            string input = File.ReadAllText("data1.txt");
+            // Act
+            var result = solver.SolveDayStar2(input);
 
-//            Solver solver = new();
-
-//            // Act
-//            var result = solver.SolveDayStar2(input);
-
-//            // Assert
-//            output.WriteLine(result);
-//            Assert.Equal("2182912364", result); // 63101831 to low
-
-//            // 2288035482 to high
-//        }
+            // Assert
+            output.WriteLine(result);
+            Assert.Equal("279", result);
+        }
     }
 }
