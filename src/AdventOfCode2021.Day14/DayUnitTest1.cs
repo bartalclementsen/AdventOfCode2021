@@ -64,38 +64,38 @@ CN -> C";
             Assert.Equal("3247", result);
         }
 
-//        [Fact]
-//        public void Star2_Test_1()
-//        {
-//            // Arrange
-//            string input =
-//@"NNCB
+        [Fact]
+        public void Star2_Test_1()
+        {
+            // Arrange
+            string input =
+@"NNCB
 
-//CH -> B
-//HH -> N
-//CB -> H
-//NH -> C
-//HB -> C
-//HC -> B
-//HN -> C
-//NN -> C
-//BH -> H
-//NC -> B
-//NB -> B
-//BN -> B
-//BB -> N
-//BC -> B
-//CC -> N
-//CN -> C";
+CH -> B
+HH -> N
+CB -> H
+NH -> C
+HB -> C
+HC -> B
+HN -> C
+NN -> C
+BH -> H
+NC -> B
+NB -> B
+BN -> B
+BB -> N
+BC -> B
+CC -> N
+CN -> C";
 
-//            Solver solver = new();
+            Solver solver = new();
 
-//            // Act
-//            var result = solver.SolveDayStar2(input);
+            // Act
+            var result = solver.SolveDayStar2(input);
 
-//            // Assert
-//            Assert.Equal("2188189693529", result);
-//        }
+            // Assert
+            Assert.Equal("2188189693529", result);
+        }
 
         //        [Fact]
         //        public void Star2_Solve()
