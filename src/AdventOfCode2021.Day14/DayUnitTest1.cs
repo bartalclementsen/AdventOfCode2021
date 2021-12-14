@@ -97,29 +97,21 @@ CN -> C";
             Assert.Equal("2188189693529", result);
         }
 
-        //        [Fact]
-        //        public void Star2_Solve()
-        //        {
-        //            // Arrange
-        //            string input = File.ReadAllText("data1.txt");
+        [Fact]
+        public void Star2_Solve()
+        {
+            // Arrange
+            string input = File.ReadAllText("data1.txt");
 
-        //            Solver solver = new();
+            Solver solver = new();
 
-        //            // Act
-        //            var result = solver.SolveDayStar2(input);
+            // Act
+            var result = solver.SolveDayStar2(input);
 
-        //            // Assert
+            // Assert
 
-        //            string expectedOutput =
-        //@"###...##..####.#....###..#..#.####.###.
-        //#..#.#..#....#.#....#..#.#..#.#....#..#
-        //#..#.#......#..#....###..####.###..#..#
-        //###..#.##..#...#....#..#.#..#.#....###.
-        //#.#..#..#.#....#....#..#.#..#.#....#...
-        //#..#..###.####.####.###..#..#.#....#...";
-
-        //            output.WriteLine(result);
-        //            Assert.Equal(expectedOutput, result);
-        //        }
+            output.WriteLine(result);
+            Assert.Equal("4110568157153", result);
+        }
     }
 }

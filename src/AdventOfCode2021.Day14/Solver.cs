@@ -28,16 +28,82 @@ namespace AdventOfCode2021.Day14
             return polymerSolver.GetMostCommonSubtractLeastCommonCount().ToString();
         }
 
+
+        public class PolymerSolver
+        {
+            private List<Pair> _pairs;
+
+            public Dictionary<Pair, PairInsertionRule> PairInsertionRules { get; set; }
+
+            public PolymerSolver(string input)
+            {
+                var lines = input.SplitByNewLine();
+
+                var polymerTemplate = lines.ElementAt(0);
+                _pairs = new List<Pair>();
+                for (var i = 0; i < polymerTemplate.Length - 1; i++)
+                {
+                    _pairs.Add(new Pair(polymerTemplate.Substring(i, 2)));
+                }
+
+                PairInsertionRules = lines.Skip(2).Select(l => new PairInsertionRule(l)).ToDictionary(p => p.Pair, p => p);
+            }
+
+            public void DoPolymerInsertionRounds(int rounds)
+            {
+
+                for (int round = 0; round < rounds; round++)
+                {
+                    List<Pair> newPairs = new List<Pair>();
+                    foreach (var pair in _pairs)
+                    {
+                        var rule = PairInsertionRules[pair];
+
+                        newPairs.Add(new Pair(pair.A, rule.Element, pair.Count));
+                        newPairs.Add(new Pair(rule.Element, pair.B, pair.Count));
+                    }
+
+                    //Merge pairs and sum count
+                    _pairs = newPairs.GroupBy(p => p).Select(p => new Pair(p.First().A, p.First().B, p.Sum(p2 => p2.Count))).ToList();
+                }
+            }
+
+            public long GetMostCommonSubtractLeastCommonCount()
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append(_pairs.First().A);
+                foreach (var pair in _pairs)
+                {
+                    sb.Append(pair.B);
+                }
+
+                var v = _pairs.GroupBy(p => p.B).Select(g => new { Letter = g.Key, Count = g.Sum(l => l.Count) }).OrderBy(g => g.Count);
+                var first = v.First();
+                var last = v.Last();                
+                return last.Count - first.Count;
+            }
+        }
+
         public class Pair : IEquatable<Pair?>, IEquatable<char[]?>
         {
             public char A { get; private set; }
 
             public char B { get; private set; }
 
+            public long Count { get; set; }
+
             public Pair(string pair)
             {
                 A = pair[0];
                 B = pair[1];
+                Count = 1;
+            }
+
+            public Pair(char a, char b, long count)
+            {
+                A = a;
+                B = b;
+                Count = count;
             }
 
             public void SetPair(char a, char b)
@@ -70,8 +136,13 @@ namespace AdventOfCode2021.Day14
             {
                 return HashCode.Combine(A, B);
             }
-        }
 
+            public override string ToString()
+            {
+                return string.Join("", A, B) + " (" + Count + ")";
+            }
+
+        }
 
         public class PairInsertionRule : IEquatable<PairInsertionRule?>, IEquatable<Pair?>
         {
@@ -112,69 +183,5 @@ namespace AdventOfCode2021.Day14
                 return Pair.Equals(other);
             }
         }
-
-        public class PolymerSolver
-        {
-            public List<char> PolymerTemplate { get; set; }
-
-            public Dictionary<Pair, PairInsertionRule> PairInsertionRules { get; set; }
-
-            public PolymerSolver(string input)
-            {
-                var lines = input.SplitByNewLine();
-                PolymerTemplate = lines.ElementAt(0).ToList();
-
-                PairInsertionRules = lines.Skip(2).Select(l => new PairInsertionRule(l)).ToDictionary(p => p.Pair, p => p);
-            }
-
-            public void DoPolymerInsertionRounds(int rounds)
-            {
-                Pair pair1 = new("AB");
-                Stopwatch sw = new Stopwatch();
-                Debug.WriteLine("Starting");
-                for (int round = 0; round < rounds; round++)
-                {
-                    sw.Restart();
-                    Debug.WriteLine("Round " + round + " started");
-                    for (int i = 0; i < PolymerTemplate.Count() - 1; i++)
-                    {
-                        pair1.SetPair(PolymerTemplate[i], PolymerTemplate[i+1]);
-
-                        if (PairInsertionRules.TryGetValue(pair1, out PairInsertionRule? pairInsertionRule))
-                        {
-                            PolymerTemplate.Insert(i + 1, pairInsertionRule.Element);
-                            i++;
-                        }
-                    }
-                    Debug.WriteLine("Round " + round + " started. " + sw.Elapsed);
-                }
-            }
-
-            public long GetMostCommonSubtractLeastCommonCount()
-            {
-                var orderd = PolymerTemplate.GroupBy(g => g).OrderBy(o => o.LongCount());
-                var first = orderd.First();
-                var last  = orderd.Last();
-
-                return last.LongCount() - first.LongCount();
-            }
-
-            public override string ToString()
-            {
-                StringBuilder sb = new();
-                sb.AppendLine(String.Join("", PolymerTemplate));
-
-                foreach (var pairInsertion in PairInsertionRules)
-                {
-                    sb.AppendLine();
-                    sb.Append(pairInsertion.ToString());
-                }
-
-                return sb.ToString();
-            }
-        }
-        //polymer template
-
-        //pair insertion 
     }
 }
