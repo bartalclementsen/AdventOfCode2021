@@ -1,16 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
 namespace AdventOfCode2021.Day14
 {
+
+    /*
+3.                  NN                              NC                              CB                 NNCB <- TEMPLATE
+4.          NC              CN              NB              BC              CH              HB         NCNBCHB
+5.      NB      BC      CC      CN      NB      BB      BB      BC      CB      BH      HC      CB     NBCCNBBBCBHCB
+6.    NB  BB  BB  BC  CN  NC  CC  CN  NB  BB  BN  NB  BN  NB  BB  BC  CH  HB  BH  HH  HB  BC  CH  HB   NBBBCNCCNBBNBNBBCHBHHBCHB
+
+Total     2       2       1       1       2       2       1       1
+3.        NB      BC      CC      CN      BB      CB      BH      HC     NBCCNBBBCBHCB
+4.      NB  BB  BB  BC  CN  NC  CC  CN  BN  NB  CH  HB  BH  HH  HB  BC   NBBBCNCCNBBNBNBBCHBHHBCHB
+Sum     2   2   2   2   1   1   1   1   2   2   2   2   1   1   1   1
+Total   4   4       3   2   1   1       1           3   1   1        
+
+      NB  BB  BC  CN  NC  CC  BN  CH  HB  BH  HH  
+      4   4   3   2   1   1   2   2   3   1   1
+     */
+
+
+
     internal class Solver
     {
         public string SolveDayStar1(string input)
         {
-            PolymerSolver polymerSolver = new (input);
+            PolymerSolver polymerSolver = new(input);
 
             polymerSolver.DoPolymerInsertionRounds(10);
 
@@ -51,7 +69,6 @@ namespace AdventOfCode2021.Day14
 
             public void DoPolymerInsertionRounds(int rounds)
             {
-
                 for (int round = 0; round < rounds; round++)
                 {
                     List<Pair> newPairs = new List<Pair>();
@@ -79,7 +96,7 @@ namespace AdventOfCode2021.Day14
 
                 var v = _pairs.GroupBy(p => p.B).Select(g => new { Letter = g.Key, Count = g.Sum(l => l.Count) }).OrderBy(g => g.Count);
                 var first = v.First();
-                var last = v.Last();                
+                var last = v.Last();
                 return last.Count - first.Count;
             }
         }
