@@ -19,7 +19,7 @@ namespace AdventOfCode2021.Day17
         public void Star1_Test_1()
         {
             // Arrange
-            string input = @"D2FE28";
+            string input = @"target area: x=20..30, y=-10..-5";
 
             Solver solver = new();
 
