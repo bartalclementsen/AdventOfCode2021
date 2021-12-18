@@ -27,25 +27,25 @@ namespace AdventOfCode2021.Day17
             var result = solver.SolveDayStar1(input);
 
             // Assert
-            Assert.Equal("6", result);
+            Assert.Equal("45", result);
         }
 
 
-        //[Fact]
-        //public void Star1_Solve()
-        //{
-        //    // Arrange
-        //    string input = File.ReadAllText("data1.txt");
+        [Fact]
+        public void Star1_Solve()
+        {
+            // Arrange
+            string input = File.ReadAllText("data1.txt");
 
-        //    Solver solver = new();
+            Solver solver = new();
 
-        //    // Act
-        //    var result = solver.SolveDayStar1(input);
+            // Act
+            var result = solver.SolveDayStar1(input);
 
-        //    // Assert
-        //    output.WriteLine(result);
-        //    Assert.Equal("986", result);
-        //}
+            // Assert
+            output.WriteLine(result);
+            Assert.Equal("8911", result);
+        }
 
         //[Fact]
         //public void Star2_Test_1()

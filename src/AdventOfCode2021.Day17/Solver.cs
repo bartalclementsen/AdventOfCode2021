@@ -14,7 +14,7 @@ namespace AdventOfCode2021.Day17
         {
             var probeSimulation = new ProbeSimulation(input);
 
-            return "";
+            return probeSimulation.GetHighestPoint().ToString();
         }
 
         public string SolveDayStar2(string input)
@@ -26,36 +26,58 @@ namespace AdventOfCode2021.Day17
         {
             public Rectangle TargetArea { get; set; }
 
-            public Probe Probe { get; set; }
 
             public ProbeSimulation(string input)
             {
                 TargetArea = new Rectangle(input);
-                Probe = new Probe();
+            }
+
+            public int GetHighestPoint()
+            {
+                Probe maxProbe = new Probe(Vector2.Zero);
+
+                for (int x = 0; x < 500; x++)
+                {
+                    for(int y = 0; y < 500; y++)
+                    {
+                        if (x == 0 && y == 0)
+                            continue;
+
+                        var probe = new Probe(new Vector2(x, y));
+                        while(TargetArea.HasPassed(probe) == false)
+                        {
+                            probe.SimulateStep();
+                        }
+
+                        if (TargetArea.Overlaps(probe) && probe.MaxY > maxProbe.MaxY)
+                            maxProbe = probe;
+                    }
+                }
+
+                return (int)maxProbe.MaxY;
             }
 
             public override string ToString()
             {
                 StringBuilder sb = new StringBuilder();
 
-                for (int y = 0; y >= TargetArea.Y1; y--)
-                {
-                    if (y != 0)
-                        sb.AppendLine();
+                //for (int y = 0; y >= TargetArea.Y1; y--)
+                //{
+                //    if (y != 0)
+                //        sb.AppendLine();
 
-                    for (int x = 0; x <= TargetArea.X2; x++)
-                    {
-                        Vector2 v = new Vector2(x, y);
-                        if (TargetArea.Overlaps(v))
-                            sb.Append("T");
-                        else if (Probe.Position == v)
-                            sb.Append("#");
-                        else
-                            sb.Append(".");
-                    }
-                }
+                //    for (int x = 0; x <= TargetArea.X2; x++)
+                //    {
+                //        Vector2 v = new Vector2(x, y);
+                //        if (TargetArea.Overlaps(v))
+                //            sb.Append("T");
+                //        //else if (Probe.Position == v)
+                //        //    sb.Append("#");
+                //        else
+                //            sb.Append(".");
+                //    }
+                //}
                 
-
                 return sb.ToString();
             }
         }
@@ -87,7 +109,25 @@ namespace AdventOfCode2021.Day17
                 Y2 = yValues[1];
             }
 
-            public bool Overlaps(Vector2 vector)
+            public bool Overlaps(Probe probe)
+            {
+                return probe.Positions.Any(v => Overlaps(v));
+            }
+
+            public bool HasPassed(Probe probe)
+            {
+                var vector = probe.Position;
+
+                if (vector.X > X2)
+                    return true;
+
+                if (vector.Y < Y1)
+                    return true;
+
+                return false;
+            }
+
+            private bool Overlaps(Vector2 vector)
             {
                 if (vector.X < X1 || vector.X > X2)
                     return false;
@@ -99,30 +139,40 @@ namespace AdventOfCode2021.Day17
             }
         }
 
-       
-
         public class Probe
         {
-            public Vector2 Position { get; set; }
+            public List<Vector2> Positions { get; } = new List<Vector2>();
+
+            public Vector2 Position => Positions.Last();
 
             public Vector2 Velocity { get; set; }
 
+            public float MaxY { get; set; }
+
+            public Probe(Vector2 velocity)
+            {
+                Positions.Add(Vector2.Zero);
+                Velocity = velocity;
+                MaxY = int.MinValue;
+            }
+
             public void SimulateStep()
             {
-                var newX = Position.X + Velocity.X;
-                if (newX > 0)
-                    newX--;
-                else if (newX < 0)
-                    newX++;
+                var newPosition = new Vector2(Position.X + Velocity.X, Position.Y + Velocity.Y);
 
-                var newY = Position.Y + Velocity.Y;
-                newY--;
+                var vNewX = 0;
+                if (Velocity.X > 0)
+                    vNewX--;
+                else if (Velocity.X < 0)
+                    vNewX++;
 
-                var newPosition = new Vector2(newX, newY);
+                if (newPosition.Y > MaxY)
+                    MaxY = newPosition.Y;
 
+                Positions.Add(newPosition);
 
-
-                Position = newPosition;
+                var newY = Velocity.Y - 1;
+                Velocity = new Vector2(vNewX, newY);
             }
         }
     }
