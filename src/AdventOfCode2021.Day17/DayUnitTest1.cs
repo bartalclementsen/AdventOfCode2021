@@ -47,36 +47,36 @@ namespace AdventOfCode2021.Day17
             Assert.Equal("8911", result);
         }
 
-        //[Fact]
-        //public void Star2_Test_1()
-        //{
-        //    // Arrange
-        //    string input = @"C200B40A82";
+        [Fact]
+        public void Star2_Test_1()
+        {
+            // Arrange
+            string input = @"target area: x=20..30, y=-10..-5";
 
-        //    Solver solver = new();
+            Solver solver = new();
 
-        //    // Act
-        //    var result = solver.SolveDayStar2(input);
+            // Act
+            var result = solver.SolveDayStar2(input);
 
-        //    // Assert
-        //    Assert.Equal("3", result);
-        //}
+            // Assert
+            Assert.Equal("112", result);
+        }
 
-        //[Fact]
-        //public void Star2_Solve()
-        //{
-        //    // Arrange
-        //    string input = File.ReadAllText("data1.txt");
+        [Fact]
+        public void Star2_Solve()
+        {
+            // Arrange
+            string input = File.ReadAllText("data1.txt");
 
-        //    Solver solver = new();
+            Solver solver = new();
 
-        //    // Act
-        //    var result = solver.SolveDayStar2(input);
+            // Act
+            var result = solver.SolveDayStar2(input);
 
-        //    // Assert
+            // Assert
 
-        //    output.WriteLine(result);
-        //    Assert.Equal("18234816469452", result);
-        //}
+            output.WriteLine(result);
+            Assert.Equal("4748", result);
+        }
     }
 }

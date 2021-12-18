@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace AdventOfCode2021.Day17
 {
@@ -19,7 +21,9 @@ namespace AdventOfCode2021.Day17
 
         public string SolveDayStar2(string input)
         {
-            return "";
+            var probeSimulation = new ProbeSimulation(input);
+            var relevantProbes = probeSimulation.GetRelevantProbes().OrderBy(o => o.InitialVelocity.X).ThenBy(o => o.InitialVelocity.Y); ;
+            return relevantProbes.Count().ToString();
         }
 
         public class ProbeSimulation
@@ -34,51 +38,32 @@ namespace AdventOfCode2021.Day17
 
             public int GetHighestPoint()
             {
-                Probe maxProbe = new Probe(Vector2.Zero);
+                return (int)GetRelevantProbes().Max(p => p.MaxY);
+            }
 
-                for (int x = 0; x < 500; x++)
+            public List<Probe> GetRelevantProbes()
+            {
+                BlockingCollection<Probe> probes = new();
+
+                Parallel.For(0, 500, (x) =>
                 {
-                    for(int y = 0; y < 500; y++)
+                    Parallel.For(-500, 500, (y) =>
                     {
                         if (x == 0 && y == 0)
-                            continue;
+                            return;
 
                         var probe = new Probe(new Vector2(x, y));
-                        while(TargetArea.HasPassed(probe) == false)
+                        while (TargetArea.HasPassed(probe) == false)
                         {
                             probe.SimulateStep();
                         }
 
-                        if (TargetArea.Overlaps(probe) && probe.MaxY > maxProbe.MaxY)
-                            maxProbe = probe;
-                    }
-                }
+                        if (TargetArea.Overlaps(probe))
+                            probes.Add(probe);
+                    });
+                });
 
-                return (int)maxProbe.MaxY;
-            }
-
-            public override string ToString()
-            {
-                StringBuilder sb = new StringBuilder();
-
-                //for (int y = 0; y >= TargetArea.Y1; y--)
-                //{
-                //    if (y != 0)
-                //        sb.AppendLine();
-
-                //    for (int x = 0; x <= TargetArea.X2; x++)
-                //    {
-                //        Vector2 v = new Vector2(x, y);
-                //        if (TargetArea.Overlaps(v))
-                //            sb.Append("T");
-                //        //else if (Probe.Position == v)
-                //        //    sb.Append("#");
-                //        else
-                //            sb.Append(".");
-                //    }
-                //}
-                
-                return sb.ToString();
+                return probes.ToList();
             }
         }
 
@@ -137,6 +122,11 @@ namespace AdventOfCode2021.Day17
 
                 return true;
             }
+
+            public override string ToString()
+            {
+                return $"x={X1}..{X2}, y={Y1}..{Y2}";
+            }
         }
 
         public class Probe
@@ -147,12 +137,15 @@ namespace AdventOfCode2021.Day17
 
             public Vector2 Velocity { get; set; }
 
+            public Vector2 InitialVelocity { get; set; }
+
             public float MaxY { get; set; }
 
             public Probe(Vector2 velocity)
             {
                 Positions.Add(Vector2.Zero);
                 Velocity = velocity;
+                InitialVelocity = velocity;
                 MaxY = int.MinValue;
             }
 
@@ -160,7 +153,7 @@ namespace AdventOfCode2021.Day17
             {
                 var newPosition = new Vector2(Position.X + Velocity.X, Position.Y + Velocity.Y);
 
-                var vNewX = 0;
+                var vNewX = Velocity.X;
                 if (Velocity.X > 0)
                     vNewX--;
                 else if (Velocity.X < 0)
@@ -173,6 +166,11 @@ namespace AdventOfCode2021.Day17
 
                 var newY = Velocity.Y - 1;
                 Velocity = new Vector2(vNewX, newY);
+            }
+
+            public override string ToString()
+            {
+                return $"{InitialVelocity.X} {InitialVelocity.Y}";
             }
         }
     }
