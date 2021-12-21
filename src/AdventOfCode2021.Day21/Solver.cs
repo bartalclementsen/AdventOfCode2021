@@ -26,8 +26,53 @@ namespace AdventOfCode2021.Day21
             return game.GetGameIndex().ToString();
         }
 
-        public record GameState(int Round, int Player1Position, int Player1Score, int Player2Position, int Player2Score);
+        public class GameState : IEquatable<GameState?>
+        {
+            public bool Player1Turn { get; set; }
 
+            public int Player1Position { get; set; }
+
+            public int Player1Score { get; set; }
+
+            public int Player2Position { get; set; }
+
+            public int Player2Score { get; set; }
+
+            public long Total { get; set; }
+
+            public GameState()
+            { }
+
+            public GameState(GameState gameState)
+            {
+                Player1Turn = gameState.Player1Turn;
+                Player1Position = gameState.Player1Position;
+                Player1Score = gameState.Player1Score;
+                Player2Position = gameState.Player2Position;
+                Player2Score = gameState.Player2Score;
+                Total = gameState.Total;
+            }
+
+            public override bool Equals(object? obj)
+            {
+                return Equals(obj as GameState);
+            }
+
+            public bool Equals(GameState? other)
+            {
+                return other != null &&
+                       Player1Turn == other.Player1Turn &&
+                       Player1Position == other.Player1Position &&
+                       Player1Score == other.Player1Score &&
+                       Player2Position == other.Player2Position &&
+                       Player2Score == other.Player2Score;
+            }
+
+            public override int GetHashCode()
+            {
+                return HashCode.Combine(Player1Turn, Player1Position, Player1Score, Player2Position, Player2Score);
+            }
+        }
         public class Game2
         {
             private readonly List<Player> _players = new List<Player>();
@@ -43,84 +88,85 @@ namespace AdventOfCode2021.Day21
 
             public void Play()
             {
-                var rootGameState = new GameState(0, _players[0].CurrentPositon, 0, _players[1].CurrentPositon, 0);
+                long maxSize = 0;
 
-                Queue<GameState> gameStates = new Queue<GameState>();
-                gameStates.Enqueue(rootGameState);
+                var rootGameState = new GameState()
+                {
+                    Player1Turn = true,
+                    Player1Position = _players[0].CurrentPositon,
+                    Player1Score = 0,
+                    Player2Position = _players[1].CurrentPositon,
+                    Player2Score = 0,
+                    Total = 1
+                };
+
+                Dictionary<int, int> rolls = new Dictionary<int, int>
+                {
+                    {9, 1},
+                    {8, 3},
+                    {7, 6},
+                    {6, 7},
+                    {5, 6},
+                    {4, 3},
+                    {3, 1},
+                };
+
+                HashSet<GameState> gameStates = new HashSet<GameState>();
+                gameStates.Add(rootGameState);
 
                 while (gameStates.Any())
                 {
-                    var gameState = gameStates.Dequeue();
+                    var gameState = gameStates.First();
+                    gameStates.Remove(gameState);
 
-                    if (gameState.Round % 2 == 0)
+                    foreach (var roll in rolls)
                     {
-                        for (int dice1 = 1; dice1 <= 3; dice1++)
+                        GameState newGameState = new GameState(gameState)
                         {
-                            for (int dice2 = 1; dice2 <= 3; dice2++)
-                            {
-                                for (int dice3 = 1; dice3 <= 3; dice3++)
-                                {
-                                    var roll = dice1 + dice2 + dice3;
+                            Player1Turn = gameState.Player1Turn == false,
+                            Total = gameState.Total * roll.Value
+                        };
 
-                                    var newPosition = gameState.Player1Position + roll;
-                                    if (newPosition > 10)
-                                        newPosition -= 10;
+                        if (gameState.Player1Turn)
+                        {
+                            var newPosition = gameState.Player1Position + roll.Key;
+                            if (newPosition > 10)
+                                newPosition -= 10;
 
-                                    var gameState1 = gameState with
-                                    {
-                                        Round = gameState.Round + 1,
-                                        Player1Position = newPosition,
-                                        Player1Score = gameState.Player1Score + newPosition
-                                    };
-
-                                    if (gameState1.Player1Score >= 21)  //has won
-                                    {
-                                        _player1Wins++;
-                                    }
-                                    else
-                                    {
-                                        gameStates.Enqueue(gameState1);
-                                    }
-                                }
-                            }
+                            newGameState.Player1Position = newPosition;
+                            newGameState.Player1Score = gameState.Player1Score + newPosition;
                         }
-                    }
-                    else
-                    {
-                        for (int i = 1; i <= 3; i++)
+                        else
                         {
-                            for (int j = 1; j <= 3; j++)
+                            var newPosition = gameState.Player2Position + roll.Key;
+                            if (newPosition > 10)
+                                newPosition -= 10;
+
+                            newGameState.Player2Position = newPosition;
+                            newGameState.Player2Score = gameState.Player2Score + newPosition;
+                        }
+
+                        if (newGameState.Player1Score >= 21)
+                        {
+                            _player1Wins += newGameState.Total;
+                        }
+                        else if (newGameState.Player2Score >= 21)
+                        {
+                            _player2Wins += newGameState.Total;
+                        }
+                        else
+                        {
+                            if(gameStates.TryGetValue(newGameState, out var oldGameState))
                             {
-                                for (int k = 1; k <= 3; k++)
-                                {
-                                    var roll = i + j + k;
-
-                                    var newPosition = gameState.Player2Position + roll;
-                                    if (newPosition > 10)
-                                        newPosition -= 10;
-
-                                    var gameState1 = gameState with
-                                    {
-                                        Round = gameState.Round + 1,
-                                        Player2Position = newPosition,
-                                        Player2Score = gameState.Player2Score + newPosition
-                                    };
-
-                                    if (gameState1.Player2Score >= 21)  //has won
-                                    {
-                                        _player2Wins++;
-                                    }
-                                    else
-                                    {
-                                        gameStates.Enqueue(gameState1);
-                                    }
-                                }
+                                oldGameState.Total += newGameState.Total;
+                            }
+                            else
+                            {
+                                gameStates.Add(newGameState);
                             }
                         }
                     }
                 }
-
-                string s = "";
             }
 
 

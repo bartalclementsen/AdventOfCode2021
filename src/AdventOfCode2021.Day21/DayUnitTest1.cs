@@ -63,6 +63,7 @@ Player 2 starting position: 8";
             // Assert
             Assert.Equal("444356092776315", result);
         }
+
         [Fact]
         public void Star2_Solve()
         {
@@ -77,7 +78,7 @@ Player 2 starting position: 8";
             // Assert
 
             output.WriteLine(result);
-            Assert.Equal("18234816469452", result);
+            Assert.Equal("274291038026362", result);
         }
     }
 }
